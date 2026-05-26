@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHRINK · مختصِر روابط مستضاف ذاتياً على GitHub Pages</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+  :root{
+    --bg:#f5f7f1; --bg-2:#ffffff; --panel:#ffffff; --panel-2:#f9fbf5;
+    --line:#dce5d2; --line-soft:#eef3e8;
+    --ink:#172113; --ink-dim:#5f6d56; --ink-faint:#7c8873;
+    --lime:#4f7f00; --lime-deep:#95c900; --accent-fill:#d9f86a; --coral:#d9623a; --danger:#bd3030;
+    --radius:8px; --shadow:0 22px 50px -34px rgba(45,58,35,.38);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"IBM Plex Sans Arabic", system-ui, sans-serif;
+    background:var(--bg); color:var(--ink); min-height:100vh; line-height:1.6;
+    -webkit-font-smoothing:antialiased; position:relative; overflow-x:hidden;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.84), rgba(245,247,241,.96)),
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:auto, 44px 44px, 44px 44px; opacity:.82;
+  }
+  body::after{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.018;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  .wrap{position:relative; z-index:1; max-width:1140px; margin:0 auto; padding:34px 22px 60px;}
+
+  header.top{display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:28px;}
+  .brand{display:flex; align-items:center; gap:14px;}
+  .logo{width:46px; height:46px; border-radius:12px; flex:none; display:grid; place-items:center;
+    background:linear-gradient(150deg, var(--accent-fill), var(--lime-deep)); color:#172113; box-shadow:0 14px 28px -20px rgba(79,127,0,.7);}
+  .logo svg{width:26px;height:26px;}
+  .brand h1{margin:0; font-size:28px; font-weight:700; letter-spacing:0;}
+  .brand .sub{font-family:"IBM Plex Mono", monospace; font-size:12px; color:var(--ink-dim); margin-top:2px; letter-spacing:.4px;}
+  .status{font-family:"IBM Plex Mono", monospace; font-size:12px; color:var(--ink-dim);
+    border:1px solid var(--line); border-radius:999px; padding:7px 14px; background:rgba(255,255,255,.72);
+    display:flex; align-items:center; gap:8px;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime); animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+  .grid{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr); gap:22px; align-items:start;}
+  @media(max-width:880px){ .grid{grid-template-columns:1fr;} }
+
+  .card{position:relative; background:linear-gradient(180deg, var(--panel), var(--panel-2));
+    border:1px solid var(--line); border-radius:var(--radius); padding:24px 22px 26px; box-shadow:var(--shadow); min-width:0;
+    animation:rise .6s cubic-bezier(.2,.7,.2,1) backwards;}
+  .card:nth-child(2){animation-delay:.07s;}
+  @keyframes rise{from{opacity:0; transform:translateY(14px);}to{opacity:1; transform:translateY(0);}}
+  .card::before{content:""; position:absolute; top:-1px; left:-1px; width:26px; height:26px;
+    border-top:2px solid var(--lime); border-left:2px solid var(--lime); border-radius:8px 0 0 0; opacity:.65;}
+  .card-title{display:flex; align-items:center; gap:10px; margin:0 0 4px; font-size:11px; letter-spacing:2px;
+    font-weight:600; color:var(--lime); font-family:"IBM Plex Mono",monospace; text-transform:uppercase;}
+  .card-h{font-size:19px; font-weight:600; margin:0 0 6px;}
+  .card-note{color:var(--ink-dim); font-size:13px; margin:0 0 14px;}
+
+  label{display:block; font-size:13px; color:var(--ink-dim); margin:14px 0 7px; font-weight:500;}
+  .field{width:100%; background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
+    border-radius:10px; padding:13px 14px; font-size:15px; font-family:inherit; transition:border-color .2s, box-shadow .2s; outline:none;}
+  .field::placeholder{color:var(--ink-faint);}
+  .field:focus{border-color:var(--lime); box-shadow:0 0 0 3px rgba(79,127,0,.12);}
+  input[dir="ltr"], .mono{font-family:"IBM Plex Mono", monospace;}
+
+  .inline{display:flex; gap:10px; align-items:flex-end;}
+  .inline > div{flex:1;}
+  .prefix-wrap{display:flex; align-items:stretch; background:var(--bg-2); border:1px solid var(--line); border-radius:10px; overflow:hidden; min-width:0;}
+  .prefix-wrap:focus-within{border-color:var(--lime); box-shadow:0 0 0 3px rgba(79,127,0,.12);}
+  .prefix-wrap .px{padding:13px 10px 13px 12px; color:var(--ink-faint); font-family:"IBM Plex Mono",monospace;
+    font-size:13px; white-space:nowrap; border-left:1px solid var(--line); background:rgba(79,127,0,.06); direction:ltr; max-width:55%; overflow:hidden; text-overflow:ellipsis;}
+  .prefix-wrap input{border:none; background:transparent; box-shadow:none; flex:1; min-width:0;}
+
+  .btn{width:100%; margin-top:18px; border:none; cursor:pointer;
+    background:linear-gradient(150deg, var(--accent-fill), var(--lime-deep)); color:#172113; font-weight:700;
+    font-size:15px; font-family:inherit; padding:14px; border-radius:11px;
+    transition:transform .12s, box-shadow .2s, filter .2s; box-shadow:0 14px 26px -20px rgba(79,127,0,.75);
+    display:flex; align-items:center; justify-content:center; gap:9px;}
+  .btn:hover{transform:translateY(-1px); filter:brightness(1.06);}
+  .btn:active{transform:translateY(0);}
+  .btn:disabled{opacity:.55; cursor:not-allowed; filter:grayscale(.4);}
+  .btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:none; margin-top:10px; font-weight:500;}
+  .btn.ghost:hover{border-color:var(--lime); color:var(--lime); background:#f1f8df;}
+  .btn.sm{padding:11px; font-size:14px; margin-top:0;}
+
+  .msg{margin-top:14px; font-size:13px; padding:11px 14px; border-radius:9px; display:none;}
+  .msg.show{display:block;}
+  .msg.err{background:#fff0f0; border:1px solid #f0b4b4; color:#9f2424;}
+  .msg.ok{background:#f3fbdd; border:1px solid #cfe99d; color:#426d00;}
+
+  /* قائمة الروابط */
+  .links{margin-top:24px;}
+  .links-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:10px;}
+  .links-head h3{margin:0; font-size:13px; letter-spacing:1px; color:var(--ink-dim); font-family:"IBM Plex Mono",monospace; text-transform:uppercase;}
+  .bulk{display:flex; gap:8px; flex-wrap:wrap;}
+  .bulk button{background:var(--bg-2); border:1px solid var(--line); color:var(--ink); padding:9px 13px;
+    border-radius:8px; cursor:pointer; font-family:inherit; font-size:13px; transition:.18s; display:flex; align-items:center; gap:7px;}
+  .bulk button:hover{border-color:var(--lime); color:var(--lime);}
+  .bulk button svg{width:15px;height:15px;}
+
+  .link-item{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:13px 15px;
+    display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; transition:.18s; min-width:0;}
+  .link-item:hover{border-color:var(--line-soft); background:var(--bg-2);}
+  .link-info{min-width:0; max-width:100%;}
+  .link-short{font-family:"IBM Plex Mono",monospace; color:var(--lime); font-size:14px; direction:ltr; text-align:left;
+    overflow-wrap:anywhere; word-break:break-word; white-space:normal; line-height:1.45; font-weight:500;}
+  .link-desc{color:var(--ink-dim); font-size:13px; margin-top:5px; overflow-wrap:anywhere; word-break:break-word;}
+  .link-long{color:var(--ink-faint); font-size:12px; direction:ltr; text-align:left; overflow-wrap:anywhere; word-break:break-word; white-space:normal; line-height:1.5; margin-top:2px;}
+  .link-acts{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; min-width:max-content;}
+  .icon-btn{background:var(--bg-2); border:1px solid var(--line); border-radius:7px; width:36px; height:36px;
+    display:grid; place-items:center; cursor:pointer; color:var(--ink-dim); transition:.18s;}
+  .icon-btn:hover{border-color:var(--lime); color:var(--lime);}
+  .icon-btn.del:hover{border-color:var(--danger); color:var(--danger);}
+  .icon-btn svg{width:16px;height:16px;}
+  .empty{color:var(--ink-faint); font-size:13px; text-align:center; padding:22px; font-family:"IBM Plex Mono",monospace;
+    border:1px dashed var(--line); border-radius:11px;}
+
+  /* QR */
+  .qr-stage{display:flex; flex-direction:column; align-items:center; gap:6px; margin-top:4px;}
+  .qr-box{width:min(220px,100%); aspect-ratio:1; border-radius:8px; background:#fff; display:grid; place-items:center;
+    padding:12px; border:1px solid var(--line);}
+  .qr-box canvas{image-rendering:pixelated; max-width:100%; height:auto;}
+  .qr-empty{color:#9aa; font-size:12px; text-align:center; font-family:"IBM Plex Mono",monospace;}
+  .opts{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; width:100%; margin-top:10px;}
+  .opt{display:flex; flex-direction:column;}
+  .opt label{margin:0 0 6px;}
+  .color-row{display:flex; align-items:center; gap:9px;}
+  .color-row input[type=color]{width:40px; height:36px; padding:0; border:1px solid var(--line); border-radius:8px; background:var(--bg-2); cursor:pointer;}
+  .color-row .hex{flex:1; font-family:"IBM Plex Mono",monospace; font-size:12px; background:var(--bg-2);
+    border:1px solid var(--line); color:var(--ink); border-radius:8px; padding:8px 9px; text-transform:uppercase; width:100%;}
+  select.field{appearance:none; padding-left:34px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238b9685'><path d='M4 6l4 4 4-4'/></svg>");
+    background-repeat:no-repeat; background-position:left 12px center;}
+  input[type=range]{width:100%; accent-color:var(--lime); cursor:pointer;}
+  .range-val{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--lime);}
+  .seg{display:flex; gap:6px; background:var(--bg-2); border:1px solid var(--line); border-radius:10px; padding:4px;}
+  .seg button{flex:1; background:transparent; border:none; color:var(--ink-dim); padding:8px; border-radius:7px; cursor:pointer; font-family:inherit; font-size:13px;}
+  .seg button.active{background:var(--accent-fill); color:#172113; font-weight:600;}
+  .download-row{display:flex; gap:10px; margin-top:10px;}
+
+  /* تعليمات */
+  details.help{margin-top:26px; border:1px solid var(--line); border-radius:12px; background:var(--panel); overflow:hidden;}
+  details.help summary{cursor:pointer; padding:16px 18px; font-weight:600; font-size:14px; list-style:none; display:flex; align-items:center; gap:10px;}
+  details.help summary::-webkit-details-marker{display:none;}
+  details.help summary .arrow{transition:.2s; color:var(--lime);}
+  details.help[open] summary .arrow{transform:rotate(90deg);}
+  .help-body{padding:0 20px 20px; color:var(--ink-dim); font-size:14px;}
+  .help-body ol{padding-right:20px; margin:8px 0;}
+  .help-body li{margin:9px 0;}
+  .help-body code{font-family:"IBM Plex Mono",monospace; background:var(--bg-2); border:1px solid var(--line);
+    padding:2px 7px; border-radius:6px; color:var(--lime); font-size:12.5px; direction:ltr; display:inline-block;}
+  .help-body b{color:var(--ink);}
+  .tree{font-family:"IBM Plex Mono",monospace; font-size:12.5px; background:var(--bg-2); border:1px solid var(--line);
+    border-radius:8px; padding:13px 15px; color:var(--ink-dim); direction:ltr; text-align:left; white-space:pre; overflow-x:auto; margin:10px 0;}
+
+  footer{margin-top:34px; text-align:center; color:var(--ink-faint); font-size:12px; font-family:"IBM Plex Mono",monospace;}
+  footer b{color:var(--ink-dim);}
+  @media(max-width:560px){
+    .wrap{padding:24px 14px 42px;}
+    .link-item{grid-template-columns:1fr;}
+    .link-acts{justify-content:flex-start; min-width:0;}
+    .opts{grid-template-columns:1fr;}
+    .download-row{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 15l6-6"></path><path d="M11 6l1-1a4 4 0 0 1 6 6l-2 2"></path><path d="M13 18l-1 1a4 4 0 0 1-6-6l2-2"></path>
+        </svg>
+      </div>
+      <div>
+        <h1>SHRINK<span style="color:var(--lime)">.</span></h1>
+        <div class="sub">روابط مستضافة ذاتياً على GitHub Pages · ثابتة ودائمة · بلا طرف ثالث</div>
+      </div>
+    </div>
+    <div class="status"><span class="dot"></span> يعمل محلياً · لا حجب</div>
+  </header>
+
+  <div class="grid">
+
+    <!-- ====== الإعداد + إنشاء الروابط ====== -->
+    <section class="card">
+      <p class="card-title">// 01 — الإعداد وإنشاء الروابط</p>
+      <h2 class="card-h">روابطك على نطاقك أنت</h2>
+      <p class="card-note">حدّد عنوان موقعك على GitHub Pages مرة واحدة، ثم أضف روابط الاستطلاع. (التفاصيل في «كيفية النشر» بالأسفل.)</p>
+
+      <label for="baseUrl">عنوان موقعك (GitHub Pages base)</label>
+      <input id="baseUrl" class="field" dir="ltr" type="text" placeholder="https://username.github.io/go" />
+      <div class="msg show ok" id="baseMsg">✓ تم حفظ عنوان الموقع.</div>
+
+      <label for="slug">الاسم القصير (slug)</label>
+      <div class="prefix-wrap">
+        <span class="px" id="slugPrefix">https://username.github.io/go/</span>
+        <input id="slug" dir="ltr" type="text" placeholder="q1" class="field" />
+      </div>
+
+      <label for="longUrl">رابط الاستطلاع الطويل</label>
+      <input id="longUrl" class="field" dir="ltr" type="text" placeholder="https://forms.gle/........" />
+
+      <label for="linkDesc">تعريف الاختصار (اختياري)</label>
+      <input id="linkDesc" class="field" type="text" maxlength="120" placeholder="مثال: استبيان رضا العملاء - مايو" />
+
+      <button class="btn" id="addBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+        <span>أضِف الرابط</span>
+      </button>
+      <div class="msg" id="addMsg"></div>
+
+      <!-- قائمة الروابط -->
+      <div class="links">
+        <div class="links-head">
+          <h3>// روابطك (<span id="count">0</span>)</h3>
+          <div class="bulk">
+            <button id="zipBtn" title="حزمة جاهزة للرفع">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"></path></svg>
+              تنزيل الحزمة (ZIP)
+            </button>
+            <button id="jsonBtn" title="نسخة احتياطية">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
+              تصدير JSON
+            </button>
+            <button id="importBtn" title="استيراد نسخة">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>
+              استيراد
+            </button>
+          </div>
+        </div>
+        <div id="linkList"><div class="empty" id="linkEmpty">لا روابط بعد — أضف أول رابط أعلاه</div></div>
+        <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+      </div>
+    </section>
+
+    <!-- ====== QR ====== -->
+    <section class="card">
+      <p class="card-title">// 02 — رمز QR</p>
+      <h2 class="card-h">توليد رمز QR</h2>
+      <p class="card-note">اضغط زر الـ QR بجوار أي رابط لتعبئته هنا، أو أدخل أي نص يدوياً.</p>
+
+      <label for="qrText">المحتوى</label>
+      <input id="qrText" class="field" dir="ltr" type="text" placeholder="https://username.github.io/go/q1" />
+
+      <div class="qr-stage">
+        <div class="qr-box" id="qrBox"><div class="qr-empty" id="qrEmpty">QR<br>سيظهر هنا</div></div>
+      </div>
+
+      <div class="opts">
+        <div class="opt">
+          <label>اللون الأمامي</label>
+          <div class="color-row"><input type="color" id="fgColor" value="#0a0d0b"><input type="text" class="hex" id="fgHex" value="#0A0D0B" dir="ltr"></div>
+        </div>
+        <div class="opt">
+          <label>لون الخلفية</label>
+          <div class="color-row"><input type="color" id="bgColor" value="#ffffff"><input type="text" class="hex" id="bgHex" value="#FFFFFF" dir="ltr"></div>
+        </div>
+        <div class="opt">
+          <label>تصحيح الخطأ</label>
+          <select id="ecLevel" class="field" dir="ltr">
+            <option value="L">L — منخفض</option>
+            <option value="M" selected="">M — متوسط</option>
+            <option value="Q">Q — عالٍ</option>
+            <option value="H">H — الأعلى</option>
+          </select>
+        </div>
+        <div class="opt">
+          <label>الحجم: <span class="range-val" id="sizeVal">512px</span></label>
+          <input type="range" id="qrSize" min="160" max="1024" step="32" value="512">
+        </div>
+        <div class="opt">
+          <label>هامش: <span class="range-val" id="marginVal">4</span></label>
+          <input type="range" id="qrMargin" min="0" max="10" step="1" value="4">
+        </div>
+        <div class="opt">
+          <label>الشكل</label>
+          <div class="seg" id="styleSeg">
+            <button class="active" data-style="square">مربّع</button>
+            <button data-style="dots">نقاط</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn" id="genQrBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><path d="M14 14h3v3h-3zM20 14v7M14 20h7"></path></svg>
+        توليد / تحديث
+      </button>
+      <div class="download-row">
+        <button class="btn ghost sm" id="dlPng" style="margin-top:0;">تحميل PNG</button>
+        <button class="btn ghost sm" id="dlSvg" style="margin-top:0;">تحميل SVG</button>
+      </div>
+      <div class="msg" id="qrMsg"></div>
+    </section>
+  </div>
+
+  <!-- ====== تعليمات النشر ====== -->
+  <details class="help">
+    <summary><span class="arrow">▸</span> كيفية النشر على GitHub Pages (مرة واحدة)</summary>
+    <div class="help-body">
+      <ol>
+        <li>أنشئ مستودعاً جديداً على GitHub، مثلاً باسم <code>go</code> (عام Public).</li>
+        <li>اضغط زر <b>تنزيل الحزمة (ZIP)</b> أعلاه، وفك ضغطها. ستجد بداخلها مجلداً لكل رابط (باسم الـ slug) يحوي ملف <code>index.html</code> للتحويل.</li>
+        <li>لوحة الإنشاء والإدارة محفوظة في <code>go.html</code>، لذلك يمكنك رفع ملفات الحزمة بدون أن تستبدل أداة الإدارة بالخطأ.</li>
+        <li>ارفع محتويات الحزمة إلى المستودع (اسحبها في صفحة المستودع → Commit).</li>
+        <li>من المستودع: <b>Settings → Pages</b>، واختر الفرع <code>main</code> والمجلد <code>/ (root)</code> ثم Save.</li>
+        <li>بعد دقيقة سيصبح موقعك جاهزاً على <code>https://USERNAME.github.io/go/</code>. عُد لأعلى وضع هذا العنوان في حقل «عنوان موقعك».</li>
+        <li>الآن أي رابط مثل <code>https://USERNAME.github.io/go/q1</code> سيحوّل فوراً إلى رابط استطلاعك.</li>
+      </ol>
+      <div class="tree">go/
+├── q1/
+│   └── index.html   ← يحوّل إلى استطلاعك الأول
+├── q2/
+│   └── index.html   ← يحوّل إلى استطلاعك الثاني
+└── ...</div>
+      <p style="margin:6px 0 0;"><b>لتعديل وجهة رابط لاحقاً:</b> غيّر الرابط هنا، نزّل الحزمة من جديد، وارفع مجلد الـ slug المعدّل (سيستبدل القديم). <b>الروابط القصيرة نفسها لا تتغيّر أبداً</b> ما دامت أسماء الـ slug ثابتة.</p>
+      <p style="margin:8px 0 0;"><b>لروابط أقصر ومناعة أعلى من الحجب:</b> اربط نطاقاً مخصّصاً (مثل <code>go.yourdomain.com</code>) من Settings → Pages → Custom domain. أو استخدم مستودعاً باسم <code>USERNAME.github.io</code> لتسقط كلمة <code>/go/</code> من الرابط.</p>
+    </div>
+  </details>
+
+  <footer>
+    كل المعالجة داخل متصفحك — لا يُرسَل أي رابط لأي خادم. روابطك تُستضاف على نطاقك في <b>GitHub Pages</b>.
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+/* ===== تخزين آمن ===== */
+const Store = (() => {
+  let mem = {}, ok = true;
+  try { localStorage.setItem("__t","1"); localStorage.removeItem("__t"); } catch(e){ ok = false; }
+  return {
+    get(k){ try{ return ok ? localStorage.getItem(k) : mem[k]; }catch(e){ return mem[k]; } },
+    set(k,v){ try{ ok ? localStorage.setItem(k,v) : (mem[k]=v); }catch(e){ mem[k]=v; } }
+  };
+})();
+const $ = id => document.getElementById(id);
+
+function showMsg(el, text, type){ el.textContent = text; el.className = "msg show " + (type||""); }
+function hideMsg(el){ el.className = "msg"; }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function htmlAttr(s){ return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function jsStr(s){ return String(s).replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/<\//g,"<\\/").replace(/[\r\n]/g,""); }
+
+async function copyText(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch(e){
+    const t=document.createElement("textarea"); t.value=text; t.style.position="fixed"; t.style.opacity="0";
+    document.body.appendChild(t); t.select();
+    let ok=false; try{ ok=document.execCommand("copy"); }catch(_){}
+    document.body.removeChild(t); return ok;
+  }
+}
+function download(filename, href){
+  const a=document.createElement("a"); a.href=href; a.download=filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+/* ===== الحالة ===== */
+let baseUrl = Store.get("shrink_base") || "";
+let links = [];
+try{ links = JSON.parse(Store.get("shrink_links")||"[]"); }catch(e){ links = []; }
+
+function saveLinks(){ Store.set("shrink_links", JSON.stringify(links)); }
+function normBase(u){ return (u||"").trim().replace(/\/+$/,""); }
+function fullShort(slug){ return (baseUrl ? baseUrl : "https://USERNAME.github.io/go") + "/" + slug; }
+function isHttpUrl(value){
+  try{
+    const u = new URL(value);
+    return /^https?:$/.test(u.protocol) && !!u.hostname;
+  }catch(e){ return false; }
+}
+function normalizeUrlInput(u){
+  const value = (u||"").trim();
+  return value && !/^https?:\/\//i.test(value) ? "https://" + value : value;
+}
+function sanitizeSlug(value){
+  return String(value||"")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g,"-")
+    .replace(/-+/g,"-")
+    .replace(/^[._-]+|[._-]+$/g,"")
+    .slice(0,64);
+}
+function slugFromUrl(value){
+  try{
+    const u = new URL(normalizeUrlInput(value));
+    const lastPath = u.pathname.split("/").filter(Boolean).pop() || "";
+    return sanitizeSlug(lastPath.replace(/\.[a-z0-9]{2,5}$/i,"")) || sanitizeSlug(u.hostname.replace(/^www\./i,"")) || "link";
+  }catch(e){ return "link"; }
+}
+function uniqueSlug(seed){
+  const base = sanitizeSlug(seed) || "link";
+  let slug = base, n = 2;
+  while(links.some(l => l.slug.toLowerCase() === slug.toLowerCase())) slug = `${base}-${n++}`;
+  return slug;
+}
+function syncBase(showSaved=false){
+  const b = normBase($("baseUrl").value);
+  if(b && !isHttpUrl(b)){
+    if(showSaved) showMsg($("baseMsg"),"أدخل عنواناً صالحاً يبدأ بـ https://","err");
+    return false;
+  }
+  const changed = b !== baseUrl;
+  baseUrl = b; Store.set("shrink_base", baseUrl); updatePrefix();
+  if(changed) renderLinks();
+  if(showSaved && b) showMsg($("baseMsg"),"✓ تم حفظ عنوان الموقع.","ok");
+  return true;
+}
+
+/* ===== عنوان الموقع ===== */
+$("baseUrl").value = baseUrl;
+updatePrefix();
+function updatePrefix(){
+  const b = normBase($("baseUrl").value) || "https://username.github.io/go";
+  $("slugPrefix").textContent = b + "/";
+}
+$("baseUrl").addEventListener("input", () => {
+  hideMsg($("baseMsg")); updatePrefix(); syncBase(false);
+});
+$("baseUrl").addEventListener("change", () => syncBase(true));
+
+/* ===== إضافة رابط ===== */
+$("addBtn").addEventListener("click", () => {
+  hideMsg($("addMsg"));
+  if(!syncBase(true)) return;
+  let long = normalizeUrlInput($("longUrl").value);
+  let slug = sanitizeSlug($("slug").value) || uniqueSlug(slugFromUrl(long));
+  let desc = $("linkDesc").value.trim();
+
+  if(!baseUrl){ showMsg($("addMsg"),"حدّد «عنوان موقعك» أولاً (في الأعلى).","err"); return; }
+  if(!long){ showMsg($("addMsg"),"أدخل رابط الاستطلاع.","err"); return; }
+  if(!isHttpUrl(long)){ showMsg($("addMsg"),"رابط الاستطلاع غير صالح.","err"); return; }
+  if(links.some(l => l.slug.toLowerCase() === slug.toLowerCase())){
+    showMsg($("addMsg"),"هذا الـ slug مستخدم بالفعل.","err"); return;
+  }
+
+  links.unshift({ slug, long, desc, t: Date.now() });
+  saveLinks(); renderLinks();
+  $("slug").value=""; $("longUrl").value=""; $("linkDesc").value="";
+  showMsg($("addMsg"),"✓ أُضيف. لا تنسَ تنزيل الحزمة ورفعها للمستودع.","ok");
+});
+$("slug").addEventListener("input", () => { $("slug").value = sanitizeSlug($("slug").value); });
+$("slug").addEventListener("keydown", e=>{ if(e.key==="Enter") $("longUrl").focus(); });
+$("longUrl").addEventListener("blur", () => {
+  if(!$("slug").value.trim() && $("longUrl").value.trim()) $("slug").value = uniqueSlug(slugFromUrl($("longUrl").value));
+});
+$("longUrl").addEventListener("keydown", e=>{ if(e.key==="Enter") $("addBtn").click(); });
+$("linkDesc").addEventListener("keydown", e=>{ if(e.key==="Enter") $("addBtn").click(); });
+
+/* ===== عرض القائمة ===== */
+function renderLinks(){
+  $("count").textContent = links.length;
+  const list = $("linkList");
+  if(links.length === 0){ list.innerHTML = '<div class="empty">لا روابط بعد — أضف أول رابط أعلاه</div>'; return; }
+  list.innerHTML = links.map((l,i) => `
+    <div class="link-item">
+      <div class="link-info">
+        <div class="link-short">${escapeHtml(fullShort(l.slug))}</div>
+        ${l.desc ? `<div class="link-desc">${escapeHtml(l.desc)}</div>` : ""}
+        <div class="link-long">→ ${escapeHtml(l.long)}</div>
+      </div>
+      <div class="link-acts">
+        <button class="icon-btn" data-act="copy" data-i="${i}" title="نسخ الرابط القصير">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        </button>
+        <button class="icon-btn" data-act="qr" data-i="${i}" title="توليد QR">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3z"/></svg>
+        </button>
+        <button class="icon-btn" data-act="file" data-i="${i}" title="تنزيل ملف التحويل">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        </button>
+        <button class="icon-btn del" data-act="del" data-i="${i}" title="حذف">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+        </button>
+      </div>
+    </div>`).join("");
+}
+
+$("linkList").addEventListener("click", async e => {
+  const btn = e.target.closest("button[data-act]"); if(!btn) return;
+  const i = parseInt(btn.dataset.i,10); const l = links[i]; if(!l) return;
+  const act = btn.dataset.act;
+  if(act==="copy"){ const ok=await copyText(fullShort(l.slug)); btn.style.color=ok?"var(--lime)":""; setTimeout(()=>btn.style.color="",900); }
+  if(act==="qr"){ $("qrText").value = fullShort(l.slug); generateQr(); $("qrBox").scrollIntoView({behavior:"smooth",block:"center"}); }
+  if(act==="file"){ download(l.slug + "_index.html", "data:text/html;charset=utf-8," + encodeURIComponent(redirectHtml(l.long, l.slug))); }
+  if(act==="del"){ if(confirm("حذف هذا الرابط من القائمة؟ (لن يُحذف من المستودع تلقائياً)")){ links.splice(i,1); saveLinks(); renderLinks(); } }
+});
+
+/* ===== ملف التحويل ===== */
+function redirectHtml(longUrl, slug){
+  const a = htmlAttr(longUrl), j = jsStr(longUrl);
+  return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>تحويل…</title>
+<link rel="canonical" href="${a}">
+<meta http-equiv="refresh" content="0; url=${a}">
+<script>location.replace("${j}");<\/script>
+<style>body{font-family:system-ui,sans-serif;background:#0a0d0b;color:#e9efe2;display:grid;place-items:center;height:100vh;margin:0;text-align:center}a{color:#cdff3a}</style>
+</head>
+<body>
+<div>جارٍ تحويلك إلى الاستطلاع…<br><br><a href="${a}">اضغط هنا إن لم يتم التحويل تلقائياً</a></div>
+</body>
+</html>`;
+}
+function publicIndexHtml(){
+  const rows = links.map((l,i) => `
+    <tr>
+      <td class="num">${i+1}</td>
+      <td class="slug"><a href="${htmlAttr(l.slug)}/">/${escapeHtml(l.slug)}</a></td>
+      <td>${escapeHtml(l.desc || "")}</td>
+    </tr>`).join("");
+  return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>فهرس الروابط</title>
+<style>
+  :root{--bg:#f5f7f1;--panel:#fff;--line:#dce5d2;--ink:#172113;--muted:#5f6d56;--accent:#4f7f00;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.7;padding:28px}
+  main{max-width:920px;margin:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:24px;box-shadow:0 22px 50px -34px rgba(45,58,35,.38)}
+  h1{margin:0 0 6px;font-size:24px}
+  p{margin:0 0 18px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;overflow:hidden;border:1px solid var(--line);border-radius:8px}
+  th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+  th{background:#eef7d8;color:var(--ink);font-size:13px}
+  tr:last-child td{border-bottom:none}
+  .num{width:70px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+  .slug{direction:ltr;text-align:left;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+  a{color:var(--accent);font-weight:700;text-decoration:none}
+  a:hover{text-decoration:underline}
+  @media(max-width:620px){body{padding:14px}main{padding:16px}th,td{padding:10px}.num{width:48px}}
+</style>
+</head>
+<body>
+<main>
+  <h1>فهرس الروابط</h1>
+  <p>روابط الاختصار المنشورة في هذا المستودع.</p>
+  <table>
+    <thead><tr><th>م</th><th>الاختصار</th><th>التعريف</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+</main>
+</body>
+</html>`;
+}
+
+/* ===== حزمة ZIP ===== */
+$("zipBtn").addEventListener("click", async () => {
+  hideMsg($("addMsg"));
+  if(links.length===0){ showMsg($("addMsg"),"أضف روابط أولاً.","err"); return; }
+  if(typeof JSZip === "undefined"){ showMsg($("addMsg"),"تعذّر تحميل مكتبة الحزم — تحقّق من الإنترنت.","err"); return; }
+  const zip = new JSZip();
+  links.forEach(l => { zip.folder(l.slug).file("index.html", redirectHtml(l.long, l.slug)); });
+  zip.file("index.html", publicIndexHtml());
+  try{
+    const blob = await zip.generateAsync({type:"blob"});
+    download("github-pages-links.zip", URL.createObjectURL(blob));
+    showMsg($("addMsg"),"✓ تم تنزيل الحزمة. ارفع محتوياتها إلى مستودعك.","ok");
+  }catch(err){ showMsg($("addMsg"),"تعذّر إنشاء الحزمة.","err"); }
+});
+
+/* ===== تصدير / استيراد JSON ===== */
+$("jsonBtn").addEventListener("click", () => {
+  if(links.length===0){ showMsg($("addMsg"),"لا شيء للتصدير.","err"); return; }
+  const data = JSON.stringify({ base: baseUrl, links }, null, 2);
+  download("shrink-links.json", "data:application/json;charset=utf-8," + encodeURIComponent(data));
+});
+$("importBtn").addEventListener("click", () => $("importFile").click());
+$("importFile").addEventListener("change", e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const d = JSON.parse(r.result);
+      if(Array.isArray(d.links)){ links = d.links; if(d.base){ baseUrl=normBase(d.base); $("baseUrl").value=baseUrl; Store.set("shrink_base",baseUrl); updatePrefix(); } saveLinks(); renderLinks(); showMsg($("addMsg"),"✓ تم الاستيراد.","ok"); }
+      else showMsg($("addMsg"),"ملف غير صالح.","err");
+    }catch(err){ showMsg($("addMsg"),"تعذّر قراءة الملف.","err"); }
+  };
+  r.readAsText(f); e.target.value="";
+});
+
+/* ===== QR ===== */
+let qrModel=null, qrModuleCount=0, qrStyle="square";
+function bindColor(c,h){ const C=$(c),H=$(h);
+  C.addEventListener("input",()=>{H.value=C.value.toUpperCase(); liveQr();});
+  H.addEventListener("input",()=>{ let v=H.value.trim(); if(!v.startsWith("#")) v="#"+v; if(/^#[0-9a-fA-F]{6}$/.test(v)){C.value=v; liveQr();} });
+}
+bindColor("fgColor","fgHex"); bindColor("bgColor","bgHex");
+$("qrSize").addEventListener("input", e=>{ $("sizeVal").textContent=e.target.value+"px"; liveQr(); });
+$("qrMargin").addEventListener("input", e=>{ $("marginVal").textContent=e.target.value; liveQr(); });
+$("ecLevel").addEventListener("change", generateQr);
+$("qrText").addEventListener("input", liveQr);
+$("styleSeg").addEventListener("click", e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  $("styleSeg").querySelectorAll("button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  qrStyle=b.dataset.style; liveQr();
+});
+let liveTimer=null;
+function liveQr(){ if(!$("qrText").value.trim()) return; clearTimeout(liveTimer); liveTimer=setTimeout(generateQr,120); }
+
+function generateQr(){
+  const text=$("qrText").value.trim(); hideMsg($("qrMsg"));
+  if(!text){ showMsg($("qrMsg"),"أدخل رابطاً أو نصاً أولاً.","err"); return; }
+  if(typeof qrcode==="undefined"){ showMsg($("qrMsg"),"تعذّر تحميل مكتبة QR — تحقّق من الإنترنت.","err"); return; }
+  try{
+    qrModel=qrcode(0,$("ecLevel").value); qrModel.addData(text); qrModel.make();
+    qrModuleCount=qrModel.getModuleCount(); drawQrCanvas();
+  }catch(err){ showMsg($("qrMsg"),"النص طويل لهذا المستوى — جرّب L أو نصاً أقصر.","err"); }
+}
+function drawQrCanvas(){
+  if(!qrModel) return;
+  const size=parseInt($("qrSize").value,10), margin=parseInt($("qrMargin").value,10);
+  const fg=$("fgColor").value, bg=$("bgColor").value, count=qrModuleCount, total=count+margin*2;
+  const cell=Math.floor(size/total), px=cell*total;
+  const cv=document.createElement("canvas"); cv.width=px; cv.height=px;
+  const ctx=cv.getContext("2d"); ctx.fillStyle=bg; ctx.fillRect(0,0,px,px); ctx.fillStyle=fg;
+  for(let r=0;r<count;r++) for(let c=0;c<count;c++) if(qrModel.isDark(r,c)){
+    const x=(c+margin)*cell, y=(r+margin)*cell;
+    if(qrStyle==="dots"){ ctx.beginPath(); ctx.arc(x+cell/2,y+cell/2,cell*0.42,0,Math.PI*2); ctx.fill(); }
+    else ctx.fillRect(x,y,cell,cell);
+  }
+  const box=$("qrBox"); box.innerHTML=""; cv.style.width="100%"; cv.style.height="auto"; box.style.background=bg; box.appendChild(cv); box._canvas=cv;
+}
+function buildQrSvg(){
+  if(!qrModel) return null;
+  const margin=parseInt($("qrMargin").value,10), fg=$("fgColor").value, bg=$("bgColor").value;
+  const count=qrModuleCount, total=count+margin*2, cell=20, px=cell*total;
+  let body=`<rect width="${px}" height="${px}" fill="${bg}"/>`;
+  for(let r=0;r<count;r++) for(let c=0;c<count;c++) if(qrModel.isDark(r,c)){
+    const x=(c+margin)*cell, y=(r+margin)*cell;
+    body += qrStyle==="dots" ? `<circle cx="${x+cell/2}" cy="${y+cell/2}" r="${cell*0.42}" fill="${fg}"/>` : `<rect x="${x}" y="${y}" width="${cell}" height="${cell}" fill="${fg}"/>`;
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 ${px} ${px}" shape-rendering="crispEdges">${body}</svg>`;
+}
+$("genQrBtn").addEventListener("click", generateQr);
+$("dlPng").addEventListener("click", ()=>{ const cv=$("qrBox")._canvas; if(!cv){showMsg($("qrMsg"),"ولّد QR أولاً.","err");return;} download("qr.png", cv.toDataURL("image/png")); showMsg($("qrMsg"),"✓ تم تحميل PNG.","ok"); });
+$("dlSvg").addEventListener("click", ()=>{ const s=buildQrSvg(); if(!s){showMsg($("qrMsg"),"ولّد QR أولاً.","err");return;} download("qr.svg", URL.createObjectURL(new Blob([s],{type:"image/svg+xml"}))); showMsg($("qrMsg"),"✓ تم تحميل SVG.","ok"); });
+$("qrText").addEventListener("keydown", e=>{ if(e.key==="Enter") generateQr(); });
+
+renderLinks();
+</script>
+
+
+</body>
+</html>
