@@ -1,42 +1,45 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SHRINK - فتح لوحة الإدارة</title>
-<meta http-equiv="refresh" content="0; url=go.html" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>فهرس الروابط</title>
 <style>
-  :root{
-    --bg:#f5f7f1; --panel:#ffffff; --line:#dce5d2;
-    --ink:#172113; --muted:#5f6d56; --accent:#4f7f00;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; min-height:100vh; display:grid; place-items:center; padding:22px;
-    font-family:system-ui, -apple-system, "Segoe UI", sans-serif;
-    background:var(--bg); color:var(--ink); line-height:1.7;
-  }
-  main{
-    width:min(520px,100%); background:var(--panel); border:1px solid var(--line);
-    border-radius:8px; padding:28px; box-shadow:0 22px 50px -34px rgba(45,58,35,.38);
-  }
-  h1{margin:0 0 8px; font-size:24px;}
-  p{margin:0 0 18px; color:var(--muted);}
-  a{
-    display:inline-flex; align-items:center; justify-content:center; min-height:44px;
-    padding:10px 16px; border-radius:8px; background:#d9f86a;
-    color:var(--ink); text-decoration:none; font-weight:700;
-  }
+  :root{--bg:#f5f7f1;--panel:#fff;--line:#dce5d2;--ink:#172113;--muted:#5f6d56;--accent:#4f7f00;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.7;padding:28px}
+  main{max-width:920px;margin:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:24px;box-shadow:0 22px 50px -34px rgba(45,58,35,.38)}
+  h1{margin:0 0 6px;font-size:24px}
+  p{margin:0 0 18px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;overflow:hidden;border:1px solid var(--line);border-radius:8px}
+  th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top}
+  th{background:#eef7d8;color:var(--ink);font-size:13px}
+  tr:last-child td{border-bottom:none}
+  .num{width:70px;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+  .slug{direction:ltr;text-align:left;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+  a{color:var(--accent);font-weight:700;text-decoration:none}
+  a:hover{text-decoration:underline}
+  @media(max-width:620px){body{padding:14px}main{padding:16px}th,td{padding:10px}.num{width:48px}}
 </style>
-<script>
-  location.replace("go.html");
-</script>
 </head>
 <body>
 <main>
-  <h1>لوحة إدارة الاختصارات</h1>
-  <p>تم نقل أداة الإنشاء والإدارة إلى <b>go.html</b> حتى لا يتم استبدالها بملف فهرس الحزمة.</p>
-  <a href="go.html">فتح go.html</a>
+  <h1>فهرس الروابط</h1>
+  <p>روابط الاختصار المنشورة في هذا المستودع.</p>
+  <table>
+    <thead><tr><th>م</th><th>الاختصار</th><th>التعريف</th></tr></thead>
+    <tbody>
+    <tr>
+      <td class="num">1</td>
+      <td class="slug"><a href="q2/">/q2</a></td>
+      <td>اختبار جدول الضرب</td>
+    </tr>
+    <tr>
+      <td class="num">2</td>
+      <td class="slug"><a href="q1/">/q1</a></td>
+      <td></td>
+    </tr></tbody>
+  </table>
 </main>
 </body>
 </html>
